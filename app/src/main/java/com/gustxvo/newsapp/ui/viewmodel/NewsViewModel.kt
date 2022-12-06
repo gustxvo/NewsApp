@@ -15,7 +15,11 @@ class NewsViewModel(private val newsRepository: NewsRepository) : ViewModel() {
 
     private var breakingNewsPage = MutableLiveData<Int>()
 
-    fun getBreakingNews(countryCode: String) {
+    init {
+        getBreakingNews("us")
+    }
+
+    private fun getBreakingNews(countryCode: String) {
         viewModelScope.launch {
             _breakingNews.postValue(Resource.Loading())
 

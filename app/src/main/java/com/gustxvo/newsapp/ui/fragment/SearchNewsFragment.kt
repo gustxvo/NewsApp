@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import com.gustxvo.newsapp.R
 import com.gustxvo.newsapp.adapter.NewsAdapter
 import com.gustxvo.newsapp.databinding.FragmentSearchNewsBinding
 import com.gustxvo.newsapp.db.ArticleDatabase
@@ -42,7 +44,15 @@ class SearchNewsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentSearchNewsBinding.inflate(layoutInflater)
-        adapter = NewsAdapter {  }
+        adapter = NewsAdapter {
+            val bundle = Bundle().apply {
+                putSerializable("article", it)
+            }
+            findNavController().navigate(
+                R.id.action_searchNewsFragment_to_articleFragment,
+                bundle
+            )
+        }
         binding.rvSearchNews.adapter = adapter
         return binding.root
     }

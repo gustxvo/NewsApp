@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import com.gustxvo.newsapp.R
 import com.gustxvo.newsapp.adapter.NewsAdapter
 import com.gustxvo.newsapp.databinding.FragmentBreakingNewsBinding
 import com.gustxvo.newsapp.db.ArticleDatabase
@@ -23,37 +25,40 @@ class BreakingNewsFragment : Fragment() {
 
     private val binding get() = _binding!!
 
+    private lateinit var adapter: NewsAdapter
+
     private val viewModel: NewsViewModel by activityViewModels {
         NewsViewModelFactory(
             NewsRepository(ArticleDatabase(requireContext()))
         )
     }
 
-    private lateinit var adapter: NewsAdapter
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentBreakingNewsBinding.inflate(layoutInflater)
+        adapter = NewsAdapter {
+            val bundle = Bundle().apply {
+                putSerializable("article", it)
+            }
+            findNavController().navigate(
+                R.id.action_breakingNewsFragment_to_articleFragment,
+                bundle
+            )
+        }
+        binding.rvBreakingNews.adapter = adapter
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = NewsAdapter {
-
-        }
-
-        binding.rvBreakingNews.adapter = adapter
-
         viewModel.breakingNews.observe(viewLifecycleOwner) { response ->
             when (response) {
                 is Resource.Success -> {
                     hideProgressBar()
                     response.data?.let { newsResponse ->
-
                         adapter.submitList(newsResponse.articles)
                     }
                 }

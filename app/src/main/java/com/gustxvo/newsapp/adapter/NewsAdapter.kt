@@ -19,7 +19,7 @@ class NewsAdapter(private val onItemClicked: (Article) -> Unit) :
                 tvTitle.text = article.title
                 tvDescription.text = article.description
                 tvPublishedAt.text = article.publishedAt
-                tvSource.text = article.source.name
+                tvSource.text = article.source?.name
             }
             Glide.with(itemView).load(article.urlToImage).into(binding.ivArticleImage)
         }

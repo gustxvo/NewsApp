@@ -32,7 +32,7 @@ class ArticleFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentArticleBinding.inflate(layoutInflater)
         return binding.root
     }
@@ -42,7 +42,7 @@ class ArticleFragment : Fragment() {
         val article = args.article
         binding.webView.apply {
             webViewClient = WebViewClient()
-            loadUrl(article.url)
+            article.url?.let { loadUrl(it) }
         }
 
         binding.fabFavorite.setOnClickListener {

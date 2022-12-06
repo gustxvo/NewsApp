@@ -13,12 +13,14 @@ class NewsViewModel(private val newsRepository: NewsRepository) : ViewModel() {
     private val _breakingNews = MutableLiveData<Resource<NewsResponse>>()
     val breakingNews: LiveData<Resource<NewsResponse>> = _breakingNews
 
-    private val breakingNewsPage = MutableLiveData<Int>()
+    var breakingNewsPage = 1
+    private var breakingNewsResponse: NewsResponse? = null
 
     private val _searchNews = MutableLiveData<Resource<NewsResponse>>()
     val searchNews: LiveData<Resource<NewsResponse>> = _searchNews
 
-    private val searchNewsPage = MutableLiveData<Int>()
+    var searchNewsPage = 1
+    private var searchNewsResponse: NewsResponse? = null
 
     init {
         getBreakingNews("us")
@@ -29,7 +31,7 @@ class NewsViewModel(private val newsRepository: NewsRepository) : ViewModel() {
             _breakingNews.postValue(Resource.Loading())
 
             val response = newsRepository.getBreakingNews(
-                countryCode, breakingNewsPage.value ?: 1
+                countryCode, breakingNewsPage
             )
             _breakingNews.postValue(handleBreakingNewsResponse(response))
         }
@@ -38,14 +40,22 @@ class NewsViewModel(private val newsRepository: NewsRepository) : ViewModel() {
     fun searchNews(searchQuery: String) = viewModelScope.launch {
         _searchNews.postValue(Resource.Loading())
 
-        val response = newsRepository.searchNews(searchQuery, searchNewsPage.value ?: 1)
+        val response = newsRepository.searchNews(searchQuery, searchNewsPage)
         _searchNews.postValue(handleSearchNewsResponse(response))
     }
 
     private fun handleBreakingNewsResponse(response: Response<NewsResponse>): Resource<NewsResponse> {
         if (response.isSuccessful) {
             response.body()?.let { resultResponse ->
-                return Resource.Success(resultResponse)
+                breakingNewsPage++
+                if (breakingNewsResponse == null) {
+                    breakingNewsResponse = resultResponse
+                } else {
+                    val oldArticles = breakingNewsResponse?.articles
+                    val newArticles = resultResponse.articles
+                    oldArticles?.addAll(newArticles)
+                }
+                return Resource.Success(breakingNewsResponse ?: resultResponse)
             }
         }
         return Resource.Error(response.message())
@@ -54,7 +64,15 @@ class NewsViewModel(private val newsRepository: NewsRepository) : ViewModel() {
     private fun handleSearchNewsResponse(response: Response<NewsResponse>): Resource<NewsResponse> {
         if (response.isSuccessful) {
             response.body()?.let { resultResponse ->
-                return Resource.Success(resultResponse)
+                searchNewsPage++
+                if (searchNewsResponse == null) {
+                    searchNewsResponse = resultResponse
+                } else {
+                    val oldArticles = searchNewsResponse?.articles
+                    val newArticles = resultResponse.articles
+                    oldArticles?.addAll(newArticles)
+                }
+                return Resource.Success(searchNewsResponse ?: resultResponse)
             }
         }
         return Resource.Error(response.message())

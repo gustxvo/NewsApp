@@ -8,9 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.gustxvo.newsapp.databinding.ArticlePreviewItemBinding
 import com.gustxvo.newsapp.model.Article
-import okhttp3.internal.notifyAll
 
-class NewsAdapter(private val onItemClicked: (Article) -> Unit) : ListAdapter<Article, NewsAdapter.ArticleViewHolder>(DiffCallback) {
+class NewsAdapter(private val onItemClicked: (Article) -> Unit) :
+    ListAdapter<Article, NewsAdapter.ArticleViewHolder>(DiffCallback) {
 
     inner class ArticleViewHolder(private val binding: ArticlePreviewItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -21,7 +21,7 @@ class NewsAdapter(private val onItemClicked: (Article) -> Unit) : ListAdapter<Ar
                 tvPublishedAt.text = article.publishedAt
                 tvSource.text = article.source.name
             }
-            Glide.with(itemView).load(article.urlToImage) to binding.ivArticleImage
+            Glide.with(itemView).load(article.urlToImage).into(binding.ivArticleImage)
         }
     }
 

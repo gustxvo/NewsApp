@@ -1,6 +1,7 @@
 package com.gustxvo.newsapp.ui.viewmodel
 
 import androidx.lifecycle.*
+import com.gustxvo.newsapp.model.Article
 import com.gustxvo.newsapp.model.NewsResponse
 import com.gustxvo.newsapp.repository.NewsRepository
 import com.gustxvo.newsapp.util.Resource
@@ -57,6 +58,16 @@ class NewsViewModel(private val newsRepository: NewsRepository) : ViewModel() {
             }
         }
         return Resource.Error(response.message())
+    }
+
+    fun getSavedNews() = newsRepository.getSavedNews()
+
+    fun saveArticle(article: Article) = viewModelScope.launch {
+        newsRepository.upsert(article)
+    }
+
+    fun deleteArticle(article: Article) = viewModelScope.launch {
+        newsRepository.deleteArticle(article)
     }
 }
 

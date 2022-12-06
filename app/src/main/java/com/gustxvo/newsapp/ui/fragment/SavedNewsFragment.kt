@@ -9,12 +9,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.SnapHelper
 import com.google.android.material.snackbar.Snackbar
 import com.gustxvo.newsapp.R
 import com.gustxvo.newsapp.adapter.NewsAdapter
 import com.gustxvo.newsapp.databinding.FragmentSavedNewsBinding
-import com.gustxvo.newsapp.databinding.FragmentSearchNewsBinding
 import com.gustxvo.newsapp.db.ArticleDatabase
 import com.gustxvo.newsapp.repository.NewsRepository
 import com.gustxvo.newsapp.ui.viewmodel.NewsViewModel
@@ -30,14 +28,15 @@ class SavedNewsFragment : Fragment() {
 
     private val viewModel: NewsViewModel by activityViewModels {
         NewsViewModelFactory(
-            NewsRepository(ArticleDatabase(requireContext()))
+            NewsRepository(ArticleDatabase(requireContext())),
+            requireActivity().application
         )
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentSavedNewsBinding.inflate(layoutInflater)
         adapter = NewsAdapter {
             val bundle = Bundle().apply {

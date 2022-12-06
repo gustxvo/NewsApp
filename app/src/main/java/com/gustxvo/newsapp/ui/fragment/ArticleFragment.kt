@@ -25,7 +25,8 @@ class ArticleFragment : Fragment() {
 
     private val viewModel: NewsViewModel by activityViewModels {
         NewsViewModelFactory(
-            NewsRepository(ArticleDatabase(requireContext()))
+            NewsRepository(ArticleDatabase(requireContext())),
+            requireActivity().application
         )
     }
 
